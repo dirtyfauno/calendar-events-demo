@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet"
+        href="/bower_components/angular-bootstrap-calendar/dist/css/angular-bootstrap-calendar.min.css"/>
+</head>
+<body>
+<div ng-app="app.jamon2">
+  <div ng-controller="jamonCtrl as jamon" class="container">
+    <div class="row">
+      <div class="col-sm-12 text-center">
+        <h1>session: {{ jamon.session_type }}</h1>
+      </div>
+      <div class="col-sm-12 text-center">
+        <h2>services</h2>
+      </div>
+      <div class="col-sm-12">
+        <ul ng-repeat="service in jamon.services">
+          <li><strong>{{ service.title }}</strong></li>
+          duration: {{ service.duration }}
+          <br/>
+          cost: {{ service.cost }}
+          <br/>
+          description: {{ service.description }}
+          <br/>
+        </ul>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <h1 class="text-center">Calendar View</h1>
+        <!--<pre>{{ jamon.event_service | json }}</pre>-->
+      </div>
+      <div ng-hide="jamon.flags.hide_calendar" style="height: 600px; overflow: auto" class="col-sm-7">
+
+        <div class="col-md-12 text-center">
+          <!--<div class="btn-group">-->
+          <a ng-class="jamon.calendar_config.calendarView === 'month' ? 'btn btn-primary active' : 'btn btn-primary'"
+             ng-click="jamon.change_current_view_to('month')">Show calendar</a>
+          <a ng-class="jamon.calendar_config.calendarView === 'day' ? 'btn btn-primary active' : 'btn btn-primary'"
+             ng-click="jamon.change_current_view_to('day')">Show today events</a>
+          <!--</div>-->
+        </div>
+
+        <div ng-if="jamon.calendar_config.calendarView === 'day'" class="col-md-12 text-center">
+          <br/>
+
+          <div class="btn-group">
+            <!--<button class="btn btn-primary" ng-click="jamon.calendar_config.control.prev()">Previous</button>-->
+            <a ng-click="jamon.calendar_config.control.prev()">Previous day</a>
+            -
+            <!--<button class="btn btn-default" ng-click="setCalendarToToday()">Today</button>-->
+            <!--<button class="btn btn-primary" ng-click="jamon.calendar_config.control.next()">Next</button>-->
+            <a ng-click="jamon.calendar_config.control.next()">Next day</a>
+          </div>
+        </div>
+
+        <mwl-calendar
+          calendar-events="jamon.calendar_config.events"
+          calendar-view="jamon.calendar_config.calendarView"
+          calendar-current-day="jamon.calendar_config.currentDay"
+          calendar-control="jamon.calendar_config.control"
+          calendar-event-click="jamon.calendar_config.eventClick(calendarEvent)"
+          calendar-edit-event-html="jamon.calendar_config.editEventHtml"
+          calendar-delete-event-html="jamon.calendar_config.deleteEventHtml"
+          calendar-edit-event-click="jamon.calendar_config.editEventClick(calendarEvent)"
+          calendar-delete-event-click="jamon.calendar_config.deleteEventClick(calendarEvent)"
+          calendar-auto-open="jamon.calendar_config.autoOpen"
+          ></mwl-calendar>
+      </div>
+      <div ng-class="jamon.flags.hide_calendar ? 'col-sm-12' : 'col-sm-5'">
+
+        <div class="col-md-12">
+          <h2 class="text-center">scheduler</h2>
+        </div>
+
+        <div class="col-md-12 text-center">
+          <div ng-if="jamon.session_type === 'seller'" class="btn-group">
+            <label ng-class="jamon.type_of_showed_events === 'important' ? 'btn btn-primary active' : 'btn btn-primary'"
+                   ng-click="jamon.type_of_showed_events = 'important'">Pendings</label>
+            <label ng-class="jamon.type_of_showed_events === 'success' ? 'btn btn-primary active' : 'btn btn-primary'"
+                   ng-click="jamon.type_of_showed_events = 'success'">Appointments</label>
+          </div>
+        </div>
+
+        <div class="col-md-12">
+          <ul ng-if="jamon.services_to_commit.length > 0 && !jamon.flags.hide_calendar"
+              ng-repeat="service in jamon.services_to_commit">
+            <li>{{service.title}}</li>
+            starts : {{service.starts_at}}
+            <br/>
+            ends : {{service.ends_at}}
+          </ul>
+
+          <ul ng-if="jamon.session_type === 'buyer' && jamon.flags.hide_calendar"
+              ng-repeat="service in jamon.services | isAfter: jamon.event_service">
+            <li><strong>{{ service.title }}</strong> <span ng-if="jamon.flags.hide_calendar">| <a
+              ng-click="jamon.add_service_to_commit(service)">Choose</a></span></li>
+            duration: {{ service.duration }}
+            <br/>
+            cost: {{ service.cost }}
+            <br/>
+            description: {{ service.description }}
+            <br/>
+          </ul>
+
+          <ul ng-if="jamon.session_type === 'seller'"
+              ng-repeat="(key, service_request) in jamon.calendar_config.events | filter:{ type: jamon.type_of_showed_events } | groupBy: 'request'">
+            <!--Group name: {{ key }}-->
+            <br/>
+            Requester: {{ service_request[0].requester }}
+            <br/>
+            Service: {{ service_request[0].title }}
+
+            <li ng-repeat="schedule in service_request">
+              {{ schedule.starts_at | date: 'mediumDate' }}; {{ schedule.starts_at | date: 'shortTime' }} - {{
+              schedule.ends_at | date: 'shortTime' }}
+              <!--<button class="btn btn-danger" ng-click="events.splice($index, 1)">Accept</button>-->
+          <span ng-if="jamon.type_of_showed_events === 'important'">
+            | <a ng-click="events.splice($index, 1)">Accept</a>
+          </span>
+
+          <span ng-if="jamon.type_of_showed_events === 'success'">
+            | <a ng-click="events.splice($index, 1)">Cancel</a>
+          </span>
+            </li>
+
+            <!--<button class="btn btn-danger" ng-click="events.splice($index, 1)">Reschedule</button>-->
+            <a ng-click="events.splice($index, 1)">Reschedule</a>
+
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <!--<pre style="height: 280px; overflow: auto">{{ jamon.calendar_config | json }}</pre>-->
+    </div>
+  </div>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+<!--https://github.com/a8m/angular-filter#get-started-->
+<script src="//cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
+<script src="/bower_components/angular-bootstrap-calendar/dist/js/angular-bootstrap-calendar-tpls.min.js"></script>
+<script src="/bower_components/Faker/build/build/faker.min.js"></script>
+<script>
+  window.dirtyfauno = {
+    events: []
+  };
+
+
+  window.calendar_demo = {
+    session_type: 'buyer',
+    services: [
+      {
+        id: 1,
+        title: 'guitar lesson',
+        description: 'wow guitar',
+        duration: 60,
+        cost: 30
+      },
+      {
+        id: 2,
+        title: 'composition lesson',
+        description: 'much theory',
+        duration: 90,
+        cost: 60
+      }
+    ],
+    not_available: new Array(20)
+      .join().split(',')
+      .map(function (item, index) {
+        return ++index;
+      })
+  };
+
+  var not_available_array = window.calendar_demo.not_available.map(function (element, index) {
+
+    var from = moment();
+    var to = moment().add(7, 'days');
+    var date = faker.date.between(from, to);
+
+    var start = moment(date).startOf('hour').format('YYYY-MM-DD HH:mm');
+    var end = moment(start).add(30, 'minutes').format('YYYY-MM-DD HH:mm');
+
+    return {
+      unique: new Date().getTime(),
+      title: 'not available',
+      type: 'warning',
+      starts_at: start,
+      ends_at: end
+    };
+  });
+
+  console.log(not_available_array);
+
+  window.dirtyfauno.events = not_available_array;
+</script>
+<script src="/src/js/calendar.js"></script>
+</body>
+</html>

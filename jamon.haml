@@ -1,0 +1,79 @@
+%div{"ng-app" => "app.jamon2"}
+  .container{"ng-controller" => "jamonCtrl as jamon"}
+    .row
+      .col-sm-12.text-center
+        %h1 session:
+      .col-sm-12.text-center
+        %h2 services
+      .col-sm-12
+        %ul{"ng-repeat" => "service in jamon.services"}
+          %li
+            %strong
+          duration:
+          %br/
+          cost:
+          %br/
+          description:
+          %br/
+    .row
+      .col-sm-12
+        %h1.text-center Calendar View
+      / <pre></pre>
+      .col-sm-7{"ng-hide" => "jamon.flags.hide_calendar", :style => "height: 600px; overflow: auto"}
+        .col-md-12.text-center
+          / <div class="btn-group">
+          %a{"ng-class" => "jamon.calendar_config.calendarView === 'month' ? 'btn btn-primary active' : 'btn btn-primary'", "ng-click" => "jamon.change_current_view_to('month')"} Show calendar
+          %a{"ng-class" => "jamon.calendar_config.calendarView === 'day' ? 'btn btn-primary active' : 'btn btn-primary'", "ng-click" => "jamon.change_current_view_to('day')"} Show today events
+        / </div>
+        .col-md-12.text-center{"ng-if" => "jamon.calendar_config.calendarView === 'day'"}
+          %br/
+          .btn-group
+            / <button class="btn btn-primary" ng-click="jamon.calendar_config.control.prev()">Previous</button>
+            %a{"ng-click" => "jamon.calendar_config.control.prev()"} Previous day
+            \-
+            / <button class="btn btn-default" ng-click="setCalendarToToday()">Today</button>
+            / <button class="btn btn-primary" ng-click="jamon.calendar_config.control.next()">Next</button>
+            %a{"ng-click" => "jamon.calendar_config.control.next()"} Next day
+        %mwl-calendar{"calendar-auto-open" => "jamon.calendar_config.autoOpen", "calendar-control" => "jamon.calendar_config.control", "calendar-current-day" => "jamon.calendar_config.currentDay", "calendar-delete-event-click" => "jamon.calendar_config.deleteEventClick(calendarEvent)", "calendar-delete-event-html" => "jamon.calendar_config.deleteEventHtml", "calendar-edit-event-click" => "jamon.calendar_config.editEventClick(calendarEvent)", "calendar-edit-event-html" => "jamon.calendar_config.editEventHtml", "calendar-event-click" => "jamon.calendar_config.eventClick(calendarEvent)", "calendar-events" => "jamon.calendar_config.events", "calendar-view" => "jamon.calendar_config.calendarView"}
+      %div{"ng-class" => "jamon.flags.hide_calendar ? 'col-sm-12' : 'col-sm-5'"}
+        .col-md-12
+          %h2.text-center scheduler
+        .col-md-12.text-center
+          .btn-group{"ng-if" => "jamon.session_type === 'seller'"}
+            %label{"ng-class" => "jamon.type_of_showed_events === 'important' ? 'btn btn-primary active' : 'btn btn-primary'", "ng-click" => "jamon.type_of_showed_events = 'important'"} Pendings
+            %label{"ng-class" => "jamon.type_of_showed_events === 'success' ? 'btn btn-primary active' : 'btn btn-primary'", "ng-click" => "jamon.type_of_showed_events = 'success'"} Appointments
+        .col-md-12
+          %ul{"ng-if" => "jamon.services_to_commit.length > 0  !jamon.flags.hide_calendar", "ng-repeat" => "service in jamon.services_to_commit"}
+            %li
+            starts :
+            %br/
+            ends :
+          %ul{"ng-if" => "jamon.session_type === 'buyer'  jamon.flags.hide_calendar", "ng-repeat" => "service in jamon.services | isAfter: jamon.event_service"}
+            %li
+              %strong
+              %span{"ng-if" => "jamon.flags.hide_calendar"}
+                |
+                %a{"ng-click" => "jamon.add_service_to_commit(service)"} Choose
+            duration:
+            %br/
+            cost:
+            %br/
+            description:
+            %br/
+          %ul{"ng-if" => "jamon.session_type === 'seller'", "ng-repeat" => "(key, service_request) in jamon.calendar_config.events | filter:{ type: jamon.type_of_showed_events } | groupBy: 'request'"}
+            / Group name:
+            %br/
+            Requester:
+            %br/
+            Service:
+            %li{"ng-repeat" => "schedule in service_request"}
+              ;  -
+              / <button class="btn btn-danger" ng-click="events.splice($index, 1)">Accept</button>
+              %span{"ng-if" => "jamon.type_of_showed_events === 'important'"}
+                |
+                %a{"ng-click" => "events.splice($index, 1)"} Accept
+              %span{"ng-if" => "jamon.type_of_showed_events === 'success'"}
+                |
+                %a{"ng-click" => "events.splice($index, 1)"} Cancel
+            / <button class="btn btn-danger" ng-click="events.splice($index, 1)">Reschedule</button>
+            %a{"ng-click" => "events.splice($index, 1)"} Reschedule

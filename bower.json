@@ -14,6 +14,7 @@
     "tests"
   ],
   "dependencies": {
-    "angular-bootstrap-calendar": "dirtyfauno/angular-bootstrap-calendar#faunicolas-stuff"
+    "angular-bootstrap-calendar": "dirtyfauno/angular-bootstrap-calendar#faunicolas-stuff",
+    "Faker": "~2.1.2"
   }
 }

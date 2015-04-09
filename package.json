@@ -1,0 +1,23 @@
+{
+  "name": "calendar-events-demo",
+  "version": "1.0.0",
+  "description": "* `$ bower install` * `$ cd bower_components/angular-bootstrap-calendar`   * `$ npm install`   * `$ gulp build` * `../../` * `python -m SimpleHTTPServer PORT`",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dirtyfauno/calendar-events-demo.git"
+  },
+  "author": "faunus",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dirtyfauno/calendar-events-demo/issues"
+  },
+  "homepage": "https://github.com/dirtyfauno/calendar-events-demo",
+  "devDependencies": {
+    "eslint": "^0.18.0",
+    "eslint-plugin-angular": "0.0.7"
+  }
+}

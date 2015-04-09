@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <title></title>
   <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/bower_components/angular-bootstrap-calendar/dist/css/angular-bootstrap-calendar.min.css"/>
+  <link rel="stylesheet"
+        href="/bower_components/angular-bootstrap-calendar/dist/css/angular-bootstrap-calendar.min.css"/>
 </head>
 <body ng-app="app.jamon2">
 <div ng-controller="jamonCtrl as jamon" class="container">
@@ -13,19 +14,22 @@
     <div class="col-sm-12 text-center">
       <h1>Calendar View</h1>
     </div>
-    <div style="height: 600px; overflow: auto" class="col-sm-7">
+
+    <div ng-hide="jamon.hide_calendar === true" style="height: 600px; overflow: auto" class="col-sm-7">
 
       <div class="col-md-12 text-center">
         <!--<div class="btn-group">-->
-        <label ng-class="jamon.calendar_config.calendarView === 'month' ? 'btn btn-primary active' : 'btn btn-primary'"
-               ng-click="jamon.change_current_view_to('month')">Show calendar</label>
-        <label ng-class="jamon.calendar_config.calendarView === 'day' ? 'btn btn-primary active' : 'btn btn-primary'"
-               ng-click="jamon.change_current_view_to('day')">Show today events</label>
+        <a ng-class="jamon.calendar_config.calendarView === 'month' ? 'btn btn-primary active' : 'btn btn-primary'"
+           ng-click="jamon.change_current_view_to('month')">Show calendar</a>
+
+        <a ng-class="jamon.calendar_config.calendarView === 'day' ? 'btn btn-primary active' : 'btn btn-primary'"
+           ng-click="jamon.change_current_view_to('day')">Show today events</a>
         <!--</div>-->
       </div>
 
       <div ng-if="jamon.calendar_config.calendarView === 'day'" class="col-md-12 text-center">
         <br/>
+
         <div class="btn-group">
           <!--<button class="btn btn-primary" ng-click="jamon.calendar_config.control.prev()">Previous</button>-->
           <a ng-click="jamon.calendar_config.control.prev()">Previous day</a>
@@ -49,6 +53,7 @@
         calendar-auto-open="jamon.calendar_config.autoOpen"
         ></mwl-calendar>
     </div>
+
     <div class="col-sm-5">
       <div class="col-md-12 text-center">
         <div class="btn-group">
@@ -68,7 +73,8 @@
           Service: {{ service_request[0].title }}
 
           <li ng-repeat="schedule in service_request">
-            {{ schedule.starts_at | date: 'mediumDate' }}; {{ schedule.starts_at | date: 'shortTime' }} - {{ schedule.ends_at | date: 'shortTime' }}
+            {{ schedule.starts_at | date: 'mediumDate' }}; {{ schedule.starts_at | date: 'shortTime' }} - {{
+            schedule.ends_at | date: 'shortTime' }}
             <!--<button class="btn btn-danger" ng-click="events.splice($index, 1)">Accept</button>-->
           <span ng-if="jamon.type_of_showed_events === 'important'">
             | <a ng-click="events.splice($index, 1)">Accept</a>
@@ -96,275 +102,105 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.4/angular-filter.min.js"></script>
 <script src="/bower_components/angular-bootstrap-calendar/dist/js/angular-bootstrap-calendar-tpls.min.js"></script>
 <script>
-  angular.module('app.jamon2', ['mwl.calendar', 'angular.filter'])
-    .factory('CalendarConfig', function ($filter, $window, $log, CalendarListener) {
+  window.calendar_demo = {
+    session_type: 'seller',
+    services: []
+  };
 
-      var testAction = testAction;
-      var events = [
-        {
-          requester: 'Karla',
-          title: 'My event title', // The title of the event
-          type: 'success', // The type of the event (determines its color). Can be important, warning, info, inverse, success or special
-          starts_at: new Date(2015, 3, 3, 1), // A javascript date object for when the event starts
-          ends_at: new Date(2015, 3, 3, 3), // A javascript date object for when the event ends
-          editable: true, // If calendar-edit-event-html is set and this field is explicitly set to false then dont make it editable
-          deletable: true, // If calendar-delete-event-html is set and this field is explicitly set to false then dont make it deleteable
-          request: 3,
-          unique: new Date().getTime()
-        },
-        {
-          requester: 'Denisse',
-          title: 'My event title', // The title of the event
-          type: 'success', // The type of the event (determines its color). Can be important, warning, info, inverse, success or special
-          starts_at: new Date(2015, 3, 5, 5), // A javascript date object for when the event starts
-          ends_at: new Date(2015, 3, 5, 6), // A javascript date object for when the event ends
-          editable: true, // If calendar-edit-event-html is set and this field is explicitly set to false then dont make it editable
-          deletable: true, // If calendar-delete-event-html is set and this field is explicitly set to false then dont make it deleteable
-          request: 4,
-          unique: new Date().getTime()
-        },
-        {
-          requester: 'Jimena',
-          title: 'My event title', // The title of the event
-          type: 'success', // The type of the event (determines its color). Can be important, warning, info, inverse, success or special
-          starts_at: new Date(2015, 3, 6, 5), // A javascript date object for when the event starts
-          ends_at: new Date(2015, 3, 6, 6), // A javascript date object for when the event ends
-          editable: true, // If calendar-edit-event-html is set and this field is explicitly set to false then dont make it editable
-          deletable: true, // If calendar-delete-event-html is set and this field is explicitly set to false then dont make it deleteable
-          request: 5,
-          unique: new Date().getTime()
-        },
-        {
-          requester: 'Lulú',
-          title: 'My event title',
-          type: 'success',
-          starts_at: new Date(2015, 3, 6, 8),
-          ends_at: new Date(2015, 3, 6, 9),
-          editable: true,
-          deletable: true,
-          request: 6,
-          unique: new Date().getTime()
-        },
-        {
-          requester: 'tao',
-          title: 'My event title',
-          type: 'important',
-          starts_at: new Date(2015, 3, 7, 5),
-          ends_at: new Date(2015, 3, 7, 6),
-          editable: true,
-          deletable: true,
-          request: 1,
-          unique: new Date().getTime()
-        },
-        {
-          requester: 'tao',
-          title: 'My event title',
-          type: 'important',
-          starts_at: new Date(2015, 3, 8, 8),
-          ends_at: new Date(2015, 3, 8, 9),
-          editable: true,
-          deletable: true,
-          request: 1,
-          unique: new Date().getTime()
-        },
-        {
-          requester: 'sarah',
-          title: 'My cuddle event', // The title of the event
-          type: 'important', // The type of the event (determines its color). Can be important, warning, info, inverse, success or special
-          starts_at: new Date(2015, 3, 9, 5), // A javascript date object for when the event starts
-          ends_at: new Date(2015, 3, 9, 6), // A javascript date object for when the event ends
-          editable: true, // If calendar-edit-event-html is set and this field is explicitly set to false then dont make it editable
-          deletable: true, // If calendar-delete-event-html is set and this field is explicitly set to false then dont make it deleteable
-          request: 2,
-          unique: new Date().getTime()
-        },
-        {
-          requester: 'sarah',
-          title: 'My cuddle event',
-          type: 'important',
-          starts_at: new Date(2015, 3, 9, 8),
-          ends_at: new Date(2015, 3, 9, 9),
-          editable: true,
-          deletable: true,
-          request: 2,
-          unique: new Date().getTime()
-        }
-
-      ];
-      var calendar = {
-        events: events,
-        calendarView: 'month',
-        currentDay: undefined,
-        control: undefined,
-        eventClick: testAction,
-        editEventHtml: '<i class=\'glyphicon glyphicon-pencil\'></i>',
-        deleteEventHtml: '<i class=\'glyphicon glyphicon-remove\'></i>',
-        editEventClick: testAction,
-        deleteEventClick: testAction,
-        autoOpen: false
-      };
-
-      var service = {
-        get_calendar: get_calendar
-      };
-
-      CalendarListener.event_was_clicked_handler(event_clicked_actions);
-      CalendarListener.hour_was_clicked_handler(hour_clicked_actions);
-
-      return service;
-
-      function hour_clicked_actions(event, data) {
-        add_event_to_events(data, calendar.events);
+  window.dirtyfauno = {
+    events: [
+      {
+        requester: 'Karla',
+        title: 'My event title', // The title of the event
+        type: 'success', // The type of the event (determines its color). Can be important, warning, info, inverse, success or special
+        starts_at: new Date(2015, 3, 3, 1), // A javascript date object for when the event starts
+        ends_at: new Date(2015, 3, 3, 3), // A javascript date object for when the event ends
+        editable: true, // If calendar-edit-event-html is set and this field is explicitly set to false then dont make it editable
+        deletable: true, // If calendar-delete-event-html is set and this field is explicitly set to false then dont make it deleteable
+        request: 3,
+        unique: new Date().getTime()
+      },
+      {
+        requester: 'Denisse',
+        title: 'My event title', // The title of the event
+        type: 'success', // The type of the event (determines its color). Can be important, warning, info, inverse, success or special
+        starts_at: new Date(2015, 3, 5, 5), // A javascript date object for when the event starts
+        ends_at: new Date(2015, 3, 5, 6), // A javascript date object for when the event ends
+        editable: true, // If calendar-edit-event-html is set and this field is explicitly set to false then dont make it editable
+        deletable: true, // If calendar-delete-event-html is set and this field is explicitly set to false then dont make it deleteable
+        request: 4,
+        unique: new Date().getTime()
+      },
+      {
+        requester: 'Jimena',
+        title: 'My event title', // The title of the event
+        type: 'success', // The type of the event (determines its color). Can be important, warning, info, inverse, success or special
+        starts_at: new Date(2015, 3, 6, 5), // A javascript date object for when the event starts
+        ends_at: new Date(2015, 3, 6, 6), // A javascript date object for when the event ends
+        editable: true, // If calendar-edit-event-html is set and this field is explicitly set to false then dont make it editable
+        deletable: true, // If calendar-delete-event-html is set and this field is explicitly set to false then dont make it deleteable
+        request: 5,
+        unique: new Date().getTime()
+      },
+      {
+        requester: 'Lulú',
+        title: 'My event title',
+        type: 'success',
+        starts_at: new Date(2015, 3, 6, 8),
+        ends_at: new Date(2015, 3, 6, 9),
+        editable: true,
+        deletable: true,
+        request: 6,
+        unique: new Date().getTime()
+      },
+      {
+        requester: 'tao',
+        title: 'My event title',
+        type: 'important',
+        starts_at: new Date(2015, 3, 7, 5),
+        ends_at: new Date(2015, 3, 7, 6),
+        editable: true,
+        deletable: true,
+        request: 1,
+        unique: new Date().getTime()
+      },
+      {
+        requester: 'tao',
+        title: 'My event title',
+        type: 'important',
+        starts_at: new Date(2015, 3, 8, 8),
+        ends_at: new Date(2015, 3, 8, 9),
+        editable: true,
+        deletable: true,
+        request: 1,
+        unique: new Date().getTime()
+      },
+      {
+        requester: 'sarah',
+        title: 'My cuddle event', // The title of the event
+        type: 'important', // The type of the event (determines its color). Can be important, warning, info, inverse, success or special
+        starts_at: new Date(2015, 3, 9, 5), // A javascript date object for when the event starts
+        ends_at: new Date(2015, 3, 9, 6), // A javascript date object for when the event ends
+        editable: true, // If calendar-edit-event-html is set and this field is explicitly set to false then dont make it editable
+        deletable: true, // If calendar-delete-event-html is set and this field is explicitly set to false then dont make it deleteable
+        request: 2,
+        unique: new Date().getTime()
+      },
+      {
+        requester: 'sarah',
+        title: 'My cuddle event',
+        type: 'important',
+        starts_at: new Date(2015, 3, 9, 8),
+        ends_at: new Date(2015, 3, 9, 9),
+        editable: true,
+        deletable: true,
+        request: 2,
+        unique: new Date().getTime()
       }
 
-      function event_clicked_actions(event, data) {
-        if (data.$event.type === 'warning') {
-          remove_event_from_events(data.$event.unique, calendar.events);
-        }
-      }
-
-      function remove_event_from_events(event_unique_id, events_array) {
-        // for ie 8 we need a polyfill for 'filter'
-        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
-
-        // feel this filter is not the way immutable?
-        // but angular does not reacts as desire
-
-        // events_array = events_array.filter(function (element, index, array) {
-        events_array.filter(function (element, index, array) {
-          if (element.unique === event_unique_id) {
-            array.splice(index, 1); // mutable way ftw?
-            // return false;
-          }
-          // return true;
-        });
-
-        // another alternative perhaps this does not need pollyfill?
-
-        //$filter('filter')(events_array, function(element, index){
-        //   $log.debug(element.unique !== event.unique);
-        //  return element.unique !== event.unique
-        //}, true);
-      }
-
-      function get_calendar() {
-        return calendar;
-      }
-
-      /**
-       *
-       * @param data (day, hour, minute, title, type)
-       * @param events_array
-       */
-      function add_event_to_events(data, events_array) {
-
-        var init_event = $window
-          .moment(data.day)
-          .hour(data.hour)
-          .minute(data.minute)
-          .format('YYYY-MM-DD HH:mm');
-
-        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
-
-        boolean_array = events_array.map(function (element, index, array) {
-
-          return $window
-              .moment(element.starts_at)
-              .format('YYYY-MM-DD HH:mm') === $window.moment(init_event).format('YYYY-MM-DD HH:mm');
-        });
-
-        var event_schedule_exist = boolean_array.indexOf(true) !== -1;
-
-        if (event_schedule_exist) {
-          return false;
-        }
-
-        var end_event = $window
-          .moment(data.day)
-          .hour(data.hour)
-          .minute(data.minute)
-          .add(30, 'minutes')
-          .format('YYYY-MM-DD HH:mm');
-
-        var new_event = {
-          title: 'not available',
-          type: 'warning',
-          starts_at: init_event,
-          ends_at: end_event,
-          unique: new Date().getTime()
-        };
-
-        events_array.push(new_event);
-      }
-
-      function testAction(data) {
-        console.log('something happen!!');
-      }
-
-      function whenEventOnSelect(start, end, jsEvent, view) {
-        console.log(arguments);
-        ctrl.eventSources.events.push({
-          "title": "my sweet event",
-          "start": "2015-04-02T11:30:00",
-          "backgroundColor": "green",
-          "allDay": false
-        })
-      }
-
-      function get_days_of_the_week() {
-        var start_of_the_week = moment().startOf('week');
-        var dates = [
-          start_of_the_week,
-          start_of_the_week.clone().add(1, 'day'),
-          start_of_the_week.clone().add(2, 'day'),
-          start_of_the_week.clone().add(3, 'day'),
-          start_of_the_week.clone().add(4, 'day'),
-          start_of_the_week.clone().add(5, 'day'),
-          start_of_the_week.clone().add(6, 'day')
-        ];
-
-        var formatted_dates = [];
-
-        angular.forEach(dates, function (value, key) {
-          this.push(value.format('YYYY-MM-DD'));
-        }, formatted_dates);
-
-        return formatted_dates;
-
-      }
-    })
-    .factory('CalendarListener', function ($rootScope) {
-      var service = {
-        hour_was_clicked_handler: when_hour_clicked,
-        event_was_clicked_handler: when_event_clicked
-      };
-
-      return service;
-
-      ////////////
-
-      function when_event_clicked(callback) {
-        $rootScope.$on('eventWasClicked', function (event, data) {
-          callback(event, data)
-        });
-      }
-
-      function when_hour_clicked(callback) {
-        $rootScope.$on('hourWasClicked', function (event, data) {
-          callback(event, data)
-        });
-      }
-    })
-    .controller('jamonCtrl', function ($scope, CalendarConfig) {
-      var ctrl = this;
-      ctrl.type_of_showed_events = 'important';
-      ctrl.change_current_view_to = change_current_view_to;
-      ctrl.calendar_config = CalendarConfig.get_calendar(0);
-
-      function change_current_view_to(new_view) {
-        ctrl.calendar_config.calendarView = new_view;
-      }
-    });
+    ]
+  };
 </script>
+<script src="/src/js/calendar.js"></script>
 </body>
 </html>

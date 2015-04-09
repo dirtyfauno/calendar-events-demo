@@ -1,0 +1,13 @@
+plugins:
+  - angular
+rules:
+  quotes:
+    - 1
+  camelcase:
+    - "never"
+  no-use-before-define:
+    - 1
+    - "nofunc"
+  no-redeclare:
+    - 0
+
